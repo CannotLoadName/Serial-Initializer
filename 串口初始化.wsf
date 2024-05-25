@@ -1,0 +1,59 @@
+<job>
+    <script language="VBScript">
+        Sub showInformation(x)
+            MsgBox x,vbInformation,"Windows Script Host"
+        End Sub
+    </script>
+    <script language="VBScript">
+        Sub showExclamation(x)
+            MsgBox x,vbExclamation,"Windows Script Host"
+        End Sub
+    </script>
+    <script language="VBScript">
+        Sub showCritical(x)
+            MsgBox x,vbCritical,"Windows Script Host"
+        End Sub
+    </script>
+    <script language="VBScript">
+        Function getConfirm(x)
+            If MsgBox(x,vbYesNo+vbQuestion+vbDefaultButton1,"Windows Script Host")=vbYes Then
+                getConfirm=True
+            Else
+                getConfirm=False
+            End If
+        End Function
+    </script>
+    <script language="VBScript">
+        Function getInput(x)
+            getInput=InputBox(x,"Windows Script Host")
+        End Function
+    </script>
+    <script language="VBScript">
+        Function runCommand(x)
+            runCommand=CreateObject("wscript.shell").Run("cmd.exe /C "&x,0,True)
+        End Function
+    </script>
+    <script language="JScript">
+        var x = parseInt(getInput("Input a valid serial ID."));
+        if (isNaN(x)) {
+            showExclamation("Serial ID should be a number.");
+        }
+        else if (x < 1 || x > 256) {
+            showExclamation("Serial ID should be between 1 and 256.");
+        }
+        else {
+            if (getConfirm("Select YES to set baudrate as 115200 instead of 9600.")) {
+                var y = runCommand("MODE COM" + String(x) + ":BAUD=115200 PARITY=n DATA=8 STOP=1");
+            }
+            else {
+                var y = runCommand("MODE COM" + String(x) + ":BAUD=9600 PARITY=n DATA=8 STOP=1");
+            }
+            if (y == 0) {
+                showInformation("Successfully initialized serial.");
+            }
+            else {
+                showCritical("Some error occurred.");
+            }
+        }
+    </script>
+</job>
